@@ -45,11 +45,13 @@ function createEmployee() {
                 last_name: createPrompt.last_name,
             },
             function (errOne, resOne) {
-                console.log("Your new employee has been added");
+                console.log("Your new employee has been added", resOne);
                 if (errOne) throw errOne;
+                assignRole();
             }
+
         );
-        trackerChoices();
+
     });
 
 }
@@ -82,50 +84,90 @@ function createDepartment() {
 }
 
 function createRole() {
+    // const departmentChoices = {};
+    // const departments = connection.query("SELECT * FROM department", function (err, res) {
+    //     console.log(res);
+    //     departmentChoices = res.map(({ id, name }) => ({
+    //         name: name,
+    //         value: id
+    //     }));
+    // })
+
+
+    // console.log(departmentChoices);
     inquirer.prompt([
         {
             type: "input",
             name: "role",
             message: "What role would you like to add?",
-
-        }]).then(createPrompt => {
-            connection.query(
-                "INSERT INTO role SET ?",
-                [
-                    {
-                        title: createPrompt.role
-                    }
-                ],
-                function (errTwo, resTwo) {
-                    if (errTwo) throw errTwo;
-                    console.log("A new role has been added")
-                    trackerChoices();
+        },
+        {
+            type: "input",
+            name: "salary",
+            message: "What is the salary for this role?"
+        },
+        {
+            type: "input",
+            name: "departmentID",
+            message: "What is the department ID?",
+            // choices: departmentChoices
+        }
+    ]).then(createPrompt => {
+        connection.query(
+            "INSERT INTO role SET ?",
+            [
+                {
+                    title: createPrompt.role,
+                    salary: createPrompt.salary,
+                    department_id: createPrompt.departmentID
                 }
-            );
-        });
+            ],
+            function (errTwo, resTwo) {
+                if (errTwo) throw errTwo;
+                console.log("A new role has been added")
+                trackerChoices();
+            }
+        );
+    });
 
 
 }
+// this function gets called in createEmployee to assign new employee a role
+// Don't know how to do this? Just want to select all titles from role table and display in a list
 function assignRole() {
-    // when user selects, it brings up a list of employees (choices is a map or filter?) with message "What employee do you want to assign a role?"
-    // upon select, a list of current roles is displayed. When selected, role is assigned to employee (by id?) 
-    // and message is displayed saying "You've assigned a role"
-    connection.query("SELECT first_name FROM ?", employee, function (errOne, resOne) {
+    connection.query("SELECT title FROM role", function (errOne, resOne) {
         if (errOne) throw errOne;
         inquirer.prompt([
             {
                 type: "list",
                 name: "employee",
-                message: "What employee do you want to assign a role?",
-                choices: resOne.map(employee => {
+                message: "What role would you like to assign this employee?",
+                choices: resOne.map(role => {
                     return {
-                        name: employee.first_name
+                        name: role.title,
+                        value: role.id
                     }
                 })
-            }
-        ])
-    })
+
+            }]).then(updatePrompt => {
+                connection.query(
+                    "UPDATE role SET ? WHERE ?",
+                    [
+                        {
+                            role: updatePrompt.title
+                        }
+                    ],
+                    function (errTwo, resTwo) {
+                        if (errTwo) throw errTwo;
+                        trackerChoices();
+                    }
+                );
+            });
+
+    });
+
 }
+
 
 //   updates employee's role
 function updateRole() {

@@ -129,9 +129,9 @@ function createRole() {
                 }
             );
         });
-
-
     })
+
+    }
 
     function updateRole() {
         connection.query("SELECT title FROM role", function (errOne, resOne) {
@@ -307,5 +307,5 @@ function createRole() {
         // return;
         // console.table();
     }
-}
+
 

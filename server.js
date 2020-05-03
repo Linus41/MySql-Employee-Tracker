@@ -20,9 +20,7 @@ const connection = mysql.createConnection({
 connection.connect(function (err) {
     if (err) throw err;
     console.log("connected as id " + connection.threadId);
-
     trackerChoices();
-
 });
 
 // create an employee
@@ -44,11 +42,9 @@ function createEmployee() {
                 last_name: createPrompt.last_name,
             },
             function (errOne, resOne) {
-                console.log("Your new employee has been added", resOne);
+                console.log("Your new employee has been added");
                 if (errOne) throw errOne;
                 trackerChoices();
-
-                // assignRole();
             }
         );
     });
@@ -124,44 +120,10 @@ function createRole() {
     })
 }
 
-// function assignRole() {
-//     connection.query("SELECT * FROM role", function (errTwo, resTwo) {
-//         console.log("resTwo result", resTwo);
-//         if (errTwo) throw errTwo;
-//         inquirer.prompt([
-//             {
-//                 type: "list",
-//                 name: "newRole",
-//                 message: "What role would you like to assign this employee?",
-//                 choices: resTwo.map(role => {
-//                     return {
-//                         name: role.title,
-//                         value: role.id
-//                     }
-//                 })
-//                 // updatePrompt is object that holds all of the answer values for inquirer q's
-//             }]).then(updatePrompt => {
-//                 connection.query(
-//                     "UPDATE employee SET role_id = ? WHERE id = ?",
-//                     [
-//                         updatePrompt.newRole,
-//                         updatePrompt.employee
-//                     ],
-//                     function (updateErr, update) {
-
-//                         if (updateErr) throw updateErr;
-//                         trackerChoices();
-//                     }
-//                 );
-//             });
-//     });
-// }
-
 // update employee role
 function updateRole() {
     connection.query("SELECT first_name, last_name, id FROM employee", function (errOne, resOne) {
         connection.query("SELECT * FROM role", function (errTwo, resTwo) {
-            console.log("resOne result", resOne);
             if (errOne) throw errOne;
             inquirer.prompt([
                 {
@@ -186,10 +148,8 @@ function updateRole() {
                             value: role.id
                         }
                     })
-                    // updatePrompt is object that holds all of the answer values for inquirer q's
                 }]).then(updatePrompt => {
                     connection.query(
-                        // updates 
                         "UPDATE employee SET role_id = ? WHERE id = ?",
                         [
                             updatePrompt.newRole,
@@ -206,15 +166,6 @@ function updateRole() {
     })
 }
 
-// // display all employees
-// function readEmployees() {
-//     connection.query("SELECT * FROM employee", function (err, res) {
-//         console.table(res)
-//         if (err) throw err;
-//         trackerChoices();
-//     });
-// }
-//   display all departments
 function readDepartments() {
     connection.query("SELECT * FROM department", function (err, res) {
         console.table(res)
@@ -222,6 +173,7 @@ function readDepartments() {
         trackerChoices();
     });
 }
+
 //   display all roles
 function readRoles() {
     connection.query("SELECT * FROM role", function (err, res) {
@@ -239,7 +191,7 @@ function readEmployees() {
     });
 }
 
-//  original list display
+//  main menu
 function trackerChoices() {
     inquirer.prompt([{
         message: "What would you like to do?",
